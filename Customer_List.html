@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer List</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .edit-btn, .delete-btn {
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .edit-btn::before {
+            content: "\270E"; /* Edit symbol (pencil) */
+        }
+
+        .delete-btn::before {
+            content: "\2716"; /* Delete symbol (cross) */
+        }
+    </style>
+</head>
+<body>
+    <h1>Customer List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="customerList"></tbody>
+    </table>
+
+    <script>
+        // Fetch customer data from the API and update the HTML
+        async function fetchCustomers() {
+            const response = await fetch('https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_customer_list', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer YOUR_BEARER_TOKEN'
+                }
+            });
+
+            if (response.ok) {
+                const customers = await response.json();
+                const customerList = document.getElementById('customerList');
+
+                customers.forEach(customer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${customer.first_name}</td>
+                        <td>${customer.last_name}</td>
+                        <td>${customer.address}</td>
+                        <td>${customer.city}</td>
+                        <td>${customer.state}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone}</td>
+                        <td>${customer.action}</td>
+                        <td>
+                            <span class="edit-btn" title="Edit" onclick="editCustomer('${customer.uuid}')"></span>
+                            <span class="delete-btn" title="Delete" onclick="deleteCustomer('${customer.uuid}')"></span>
+                        </td>
+                    `;
+                    customerList.appendChild(row);
+                });
+            } else {
+                console.error('Failed to fetch customer list');
+            }
+        }
+
+        function editCustomer(uuid) {
+            // Implement edit functionality here
+            alert(`Editing customer with UUID: ${uuid}`);
+        }
+
+        function deleteCustomer(uuid) {
+            // Implement delete functionality here
+            if (confirm('Are you sure you want to delete this customer?')) {
+                alert(`Deleting customer with UUID: ${uuid}`);
+            }
+        }
+
+        fetchCustomers();
+    </script>
+</body>
+</html>
